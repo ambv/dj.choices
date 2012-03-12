@@ -191,6 +191,24 @@ Predefined choices
 There are several classes of choices which are very common in web applications
 so they are provided already: ``Country``, ``Gender`` and ``Language``.
 
+Change Log
+==========
+
+0.8.1
+~~~~~
+
+* old accessors temporarily restored for backward compatibility (undocumented
+  and to be removed in 1.0)
+
+* minor documentation fixes
+
+0.8.0
+~~~~~
+
+* code separated from ``lck.django``
+
+* PEP8-fied the accessor APIs
+
 Authors
 =======
 
