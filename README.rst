@@ -191,6 +191,13 @@ Predefined choices
 There are several classes of choices which are very common in web applications
 so they are provided already: ``Country``, ``Gender`` and ``Language``.
 
+How do I run the tests?
+~~~~~~~~~~~~~~~~~~~~~~~
+
+The easiest way would be to run::
+
+  $ DJANGO_SETTINGS_MODULE="dj._choicestestproject.settings" django-admin.py test
+
 Change Log
 ==========
 
