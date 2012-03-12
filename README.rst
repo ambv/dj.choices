@@ -181,7 +181,7 @@ One can also change how the pairs are constructed by providing a factory
 function. For instance, to use the class of choices defined above for the
 ``LANGUAGES`` setting in ``settings.py``, one could specify::
 
-    >>> Language(pair=lambda choice: (choice.name, choice.raw))
+    >>> Language(item=lambda choice: (choice.name, choice.raw))
     [(u'de', 'German'), (u'en', 'English'), (u'fr', 'French'),
      (u'pl', 'Polish')]
 
