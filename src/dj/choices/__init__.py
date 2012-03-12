@@ -279,6 +279,19 @@ class Choices(list):
     Choice = Choice
     Group = ChoiceGroup
 
+    # deprecated compatibility layer for code using lck.django.choices < 0.8
+    # to be removed at 1.0
+    FromName = from_name
+    IDFromName = id_from_name
+    DescFromName = desc_from_name
+    RawFromName = raw_from_name
+    FromID = from_id
+    NameFromID = name_from_id
+    DescFromID = desc_from_id
+    RawFromID = raw_from_id
+    ToIDs = to_ids
+    ToNames = to_names
+
 #
 # commonly used choices
 #
