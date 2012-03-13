@@ -174,10 +174,10 @@ class SimpleTest(TestCase):
         class InvitationStatus(Choices):
             _ = Choices.Choice
 
-            blocked = _("Blocked") << {'first_letter': 'b'}
-            rejected = _("Rejected") << {'first_letter': 'r'}
-            pending = _("Pending") << {'first_letter': 'p'}
-            accepted = _("Accepted") << {'first_letter': 'a'}
+            blocked = _("Blocked").extra(first_letter='b')
+            rejected = _("Rejected").extra(first_letter='r')
+            pending = _("Pending").extra(first_letter='p')
+            accepted = _("Accepted").extra(first_letter='a')
 
         self.assertEqual(InvitationStatus.blocked.first_letter, 'b')
         self.assertEqual(InvitationStatus.rejected.first_letter, 'r')
@@ -190,15 +190,15 @@ class SimpleTest(TestCase):
         class Colors(Choices):
             _ = Choices.Choice
 
-            NICE = Choices.Group(0) << {'comment': 'Nice!'}
+            NICE = Choices.Group(0).extra(comment='Nice!')
             blue = _("Blue")
-            green = _("Green") << {'comment': 'This is it.'}
+            green = _("Green").extra(comment='This is it.')
             brown = _("Brown")
 
-            UGLY = Choices.Group(10) << {'comment': 'Ugly!'}
+            UGLY = Choices.Group(10).extra(comment='Ugly!')
             pink = _("Pink")
             red = _("Red")
-            toxic_waste_green = _("Toxic waste green") << {'comment': 'Yuk!'}
+            toxic_waste_green = _("Toxic waste green").extra(comment='Yuk!')
 
         self.assertEqual(Colors.blue.comment, 'Nice!')
         self.assertEqual(Colors.green.comment, 'This is it.')

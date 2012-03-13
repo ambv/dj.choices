@@ -70,7 +70,7 @@ several features which support the DRY principle:
     explicit. Suggestions for a better approach are welcome.
 
 Grouping choices
-~~~~~~~~~~~~~~~~
+----------------
 
 One of the worst problems with choices is their weak extensibility. For
 instance, an application defines a group of possible choices like this::
@@ -157,7 +157,10 @@ As a bonus, the explicitly specified groups can be used when needed::
      (5, u'Affero GPL')]
 
 Advanced functionality
-~~~~~~~~~~~~~~~~~~~~~~
+----------------------
+
+Filtering
+~~~~~~~~~
 
 The developer can specify all possible choices for future use and then filter
 out only the currently applicable values on choices creation::
@@ -177,6 +180,9 @@ out only the currently applicable values on choices creation::
     
 This has the great advantage of keeping the IDs and sorting intact.
 
+Custom item format
+~~~~~~~~~~~~~~~~~~
+
 One can also change how the pairs are constructed by providing a factory
 function. For instance, to use the class of choices defined above for the
 ``LANGUAGES`` setting in ``settings.py``, one could specify::
@@ -185,14 +191,92 @@ function. For instance, to use the class of choices defined above for the
     [(u'de', 'German'), (u'en', 'English'), (u'fr', 'French'),
      (u'pl', 'Polish')]
 
+Extra attributes on choices
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Each choice can receive extra arguments using the ``extra()`` method::
+
+    >>> class Python(Choices):
+    ...   _ = Choices.Choice
+    ...
+    ...   cpython = _("CPython").extra(language='C')
+    ...   pypy = _("PyPy").extra(language='Python')
+    ...   jython = _("Jython").extra(language='Java')
+    ...   iron_python = _("IronPython").extra(language='C#')
+
+This adds a ``language`` attribute to each choice so you can get it back like
+this::
+
+    >>> Python.jython.language
+    'Java'
+
+This enables polymorphic attribute access later on when using models or forms.
+For instance, suppose you have a simple model like::
+
+    >>> class Library(models.Model):
+    ...   name = models.CharField(max_length=100)
+    ...   python_kind = models.IntegerField(choices=Python(), default=Python.cpython.id)
+
+In that case to get the implementation language back you'd do::
+
+    >>> library = Library.objects.get(name='dj.choices')
+    >>> Python.from_id(library.python_kind).language
+    'C'
+
+That frees your user code of any conditionals or dictionaries that depend on the
+state of the choices class. If you would add another choice to it, no user code
+needs to be changed to support it. This also supports the DRY principle because
+the choices class becomes the single place where configuration of that kind is
+held.
+
+Extra attributes on choice groups
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Unsurprisingly, choice groups can have extra attributes as well. They are then
+inherited by choices in such a group and can be overriden if necessary. For
+instance::
+
+  >>> class ProfileChange(Choices):
+  ...   _ = Choices.Choice
+  ... 
+  ...   USER = Choices.Group(0).extra(icon='bookkeeping.png', is_public=True)
+  ...   email = _("e-mail").extra(is_public=False)
+  ...   first_name = _("first name")
+  ...   last_name = _("last name")
+  ... 
+  ...   BASIC_INFO = Choices.Group(10).extra(icon='bookkeeping.png', is_public=True)
+  ...   birth_date = _("birth date").extra(icon='calendar.png')
+  ...   gender = _("gender").extra(icon='male_female.png')
+  ...   country = _("country")
+  ...   city = _("city")
+  ... 
+  ...   CONTACT_INFO = Choices.Group(20).extra(icon='contactbook.png', is_public=False)
+  ...   skype = _("Skype ID")
+  ...   icq = _("ICQ number")
+  ...   msn = _("MSN login")
+  ...   xfire = _("X-Fire login")
+  ...   irc = _("IRC info").extra(is_public=True)
+
+In that case proper inheritance takes place::
+
+  >>> ProfileChange.first_name.is_public
+  True
+  >>> ProfileChange.email.is_public
+  False
+  >>> ProfileChange.country.icon
+  'bookkeeping.png'
+  >>> ProfileChange.birth_date.icon
+  'calendar.png'
+
+
 Predefined choices
-~~~~~~~~~~~~~~~~~~
+------------------
 
 There are several classes of choices which are very common in web applications
 so they are provided already: ``Country``, ``Gender`` and ``Language``.
 
 How do I run the tests?
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 The easiest way would be to run::
 
@@ -201,8 +285,13 @@ The easiest way would be to run::
 Change Log
 ==========
 
+0.8.2
+-----
+
+* extra attribute injection API is now public and documented
+
 0.8.1
-~~~~~
+-----
 
 * old accessors temporarily restored for backward compatibility (undocumented
   and to be removed in 1.0)
@@ -210,7 +299,7 @@ Change Log
 * minor documentation fixes
 
 0.8.0
-~~~~~
+-----
 
 * code separated from ``lck.django``
 

@@ -44,7 +44,7 @@ class ChoicesEntry(object):
         self.raw = description
         self.global_id = Choice.global_id
         self.name = name
-        self.__shifted__ = []
+        self.__extra__ = []
         ChoicesEntry.global_id += 1
 
     @property
@@ -66,17 +66,16 @@ class ChoicesEntry(object):
     def __repr__(self):
         return self.__unicode__(raw=True)
 
-    def __lshift__(self, other):
-        """Unholy method for adding custom attributes to choices
-        at declaration time. While this will cringe purists, it really
-        works well when you need it. For example::
+    def extra(self, **other):
+        """Enables adding custom attributes to choices at declaration time.
+        For example::
 
             class Color(Choices):
                 _ = Choices.Choice
 
-                red = _("red") << {'html': '#ff0000'}
-                green = _("green") << {'html': '#00ff00'}
-                blue = _("blue") << {'html': '#0000ff'}
+                red = _("red").extra(html='#ff0000')
+                green = _("green").extra(html='#00ff00')
+                blue = _("blue").extra(html='#0000ff')
 
         Later on you can use the defined attribute directly::
 
@@ -87,15 +86,15 @@ class ChoicesEntry(object):
 
             >>> Color.from_name(request.POST['color']).html
             '#00ff00'
-
-        If you have an idea for an API which is more pure but at the same time
-        comparably concise, to the point and declarative on both sides (e.g.
-        while defining choices and while using them), please let me know.
         """
         for key, value in other.iteritems():
-            self.__shifted__.append(key)
+            self.__extra__.append(key)
             setattr(self, key, value)
         return self
+
+    def __lshift__(self, other):
+        """Deprecated: use choice.extra(arg=value)."""
+        return self.extra(**other)
 
 
 class ChoiceGroup(ChoicesEntry):
@@ -163,9 +162,9 @@ class _ChoicesMeta(type):
                 if group:
                     group.choices.append(choice)
                     choice.group = group
-                    for shifted in group.__shifted__:
-                        if not hasattr(choice, shifted):
-                            setattr(choice, shifted, getattr(group, shifted))
+                    for extra in group.__extra__:
+                        if not hasattr(choice, extra):
+                            setattr(choice, extra, getattr(group, extra))
                 if choice.id == -255:
                     last_choice_id += 1
                     choice.id = last_choice_id
