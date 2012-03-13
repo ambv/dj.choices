@@ -31,8 +31,8 @@ from __future__ import unicode_literals
 from functools import partial
 from textwrap import dedent
 
-from lck.lang import unset
 
+unset = object()
 ugettext = unset
 
 
@@ -51,6 +51,7 @@ class ChoicesEntry(object):
     def desc(self):
         if not self.raw:
             return self.raw
+        # ugettext obscured that way so you can use choices in settings.py
         global ugettext
         if ugettext is unset:
             from django.utils.translation import ugettext
@@ -290,6 +291,7 @@ class Choices(list):
     RawFromID = raw_from_id
     ToIDs = to_ids
     ToNames = to_names
+
 
 #
 # commonly used choices
@@ -797,6 +799,13 @@ class Language(Choices):
 
     raw_from_name = _language_lookup_getter(overrides=Choices.raw_from_name,
         getter=lambda choice: choice.raw)
+
+    # deprecated compatibility layer for code using lck.django.choices < 0.8
+    # to be removed at 1.0
+    FromName = from_name
+    IDFromName = id_from_name
+    DescFromName = desc_from_name
+    RawFromName = raw_from_name
 
 
 class Gender(Choices):

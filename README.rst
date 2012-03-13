@@ -156,6 +156,44 @@ As a bonus, the explicitly specified groups can be used when needed::
     [(1, u'GPL, any'), (2, u'GPL 2'), (3, u'GPL 3'), (4, u'LGPL'),
      (5, u'Affero GPL')]
 
+``ChoiceField``
+---------------
+
+Choices can be used with generic ``IntegerField`` and ``CharField`` instances.
+When you do that though, some minor API deficiencies show up fairly quickly.
+First, when you define the field, you have to instanciate the choices class and
+the default value has to be converted to the proper type explicitly::
+
+    color = models.IntegerField(choices=Color(), default=Color.green.id)
+
+Second, when getting the attribute back from a model, it has to be converted to
+a Choice instance to do anything interesting with it::
+
+    >>> obj = Model.objects.get(pk=3)
+    >>> obj.color
+    3
+    >>> Color.from_id(obj.color)
+    <Choice: Blue (id: 3, name: blue)> 
+
+To overcome those problems a ``ChoiceField`` is available in the
+``dj.choices.fields`` package. It is based on integers on the database level but
+the API exposes ``Choice`` instances. This helps both on the definition side::
+
+    color = ChoiceField(choices=Color, default=Color.green)
+
+and on the access side::
+
+    >>> obj = Model.objects.get(pk=3)
+    >>> obj.color
+    <Choice: Blue (id: 3, name: blue)>
+    >>> obj.color = Color.green
+    >>> obj.save()
+    >>> Model.objects.get(pk=3).color
+    <Choice: Green (id: 2, name: green)> 
+
+For rendering forms, the field coerces to integer values. That also means that
+wherever ``Choice`` instances are accepted, integers are also fine.
+
 Advanced functionality
 ----------------------
 
@@ -287,6 +325,8 @@ Change Log
 
 0.8.2
 -----
+
+* ``ChoiceField`` introduced
 
 * extra attribute injection API is now public and documented
 

@@ -206,3 +206,65 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.pink.comment, 'Ugly!')
         self.assertEqual(Colors.red.comment, 'Ugly!')
         self.assertEqual(Colors.toxic_waste_green.comment, 'Yuk!')
+
+    def test_choicefield(self):
+        from dj._choicestestproject.app.models import Favourites, Color,\
+                MusicGenre, Sports
+        judy = Favourites.create(name='Judy')
+        self.assertEqual(judy.color, Color.green)
+        self.assertEqual(judy.music, MusicGenre.banjo)
+        self.assertEqual(judy.sport, Sports.poker)
+        judy.color = Color.blue
+        judy.music = MusicGenre.rock
+        judy.sport = Sports.mountaineering
+        judy.save()
+        judy2 = Favourites.objects.get(name='Judy')
+        self.assertEqual(judy2.color, Color.blue)
+        self.assertEqual(judy2.music, MusicGenre.rock)
+        self.assertEqual(judy2.sport, Sports.mountaineering)
+        tom = Favourites.create(name='Tom', sport=Sports.mountaineering)
+        self.assertEqual(Favourites.objects.filter(sport=102).count(), 2)
+        self.assertEqual(Favourites.objects.filter(
+            sport=Sports.mountaineering).count(), 2)
+        self.assertEqual(Favourites.objects.filter(
+            sport__gt=10).count(), 2)
+        self.assertEqual(Favourites.objects.filter(
+            color__lte=2).count(), 1)
+        tom.color = 1
+        tom.save()
+        tom2 = Favourites.objects.get(name='Tom')
+        self.assertEqual(tom2.color, Color.red)
+
+    def test_form_with_choicefields(self):
+        from dj._choicestestproject.app.models import Favourites, Color,\
+                MusicGenre, Sports
+        from dj._choicestestproject.app.forms import FavouritesForm
+        empty_form = FavouritesForm()
+        self.assertFalse(empty_form.is_valid())
+        self.assertEqual(empty_form._bound_value('color'), Color.green.id)
+        self.assertEqual(empty_form._bound_value('music'), None)
+        self.assertEqual(empty_form._bound_value('sport'), None)
+        self.assertEqual(empty_form._bound_value('name'), None)
+        empty_form_data = FavouritesForm(data={
+                'color': 1, 'music': 2, 'sport': 3, 'name': 'Richard'})
+        self.assertTrue(empty_form_data.is_valid())
+        self.assertEqual(empty_form_data._bound_value('color'), Color.red.id)
+        self.assertEqual(empty_form_data._bound_value('music'),
+                MusicGenre.country.id)
+        self.assertEqual(empty_form_data._bound_value('sport'), Sports.baseball.id)
+        self.assertEqual(empty_form_data._bound_value('name'), 'Richard')
+        judy = Favourites.create(name='Judy')
+        judy_form = FavouritesForm(instance=judy)
+        self.assertFalse(judy_form.is_valid()) # because it's not bound
+        self.assertEqual(judy_form._bound_value('color'), Color.green.id)
+        self.assertEqual(judy_form._bound_value('music'), MusicGenre.banjo.id)
+        self.assertEqual(judy_form._bound_value('sport'), Sports.poker.id)
+        self.assertEqual(judy_form._bound_value('name'), 'Judy')
+        data_for_form = dict(judy_form.initial)
+        data_for_form.update({'color': 3})
+        judy_form_data = FavouritesForm(instance=judy, data=data_for_form)
+        self.assertTrue(judy_form_data.is_valid())
+        self.assertEqual(judy_form_data._bound_value('color'), Color.blue.id)
+        self.assertEqual(judy_form_data._bound_value('music'), MusicGenre.banjo.id)
+        self.assertEqual(judy_form_data._bound_value('sport'), Sports.poker.id)
+        self.assertEqual(judy_form_data._bound_value('name'), 'Judy')
