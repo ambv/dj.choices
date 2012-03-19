@@ -323,6 +323,13 @@ The easiest way would be to run::
 Change Log
 ==========
 
+0.8.3
+-----
+
+* ``MANIFEST.in`` was previously missing which made the source distribution hard
+  to install
+
+
 0.8.2
 -----
 
