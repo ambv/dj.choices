@@ -60,7 +60,11 @@ class ChoicesEntry(object):
     def __unicode__(self, raw=False):
         name = self.name
         if raw:
-            name = "{!r}".format(name)[2:-1]
+            name = "{!r}".format(name)
+            if name[0] in 'bru':
+                name = name[2:-1]
+            else:
+                name = name[1:-1]
         return "<{}: {} (id: {})>".format(self.__class__.__name__,
             name, self.id)
 
@@ -116,9 +120,17 @@ class Choice(ChoicesEntry):
     def __unicode__(self, raw=False):
         name = self.name
         rawval = self.raw
-        if raw:
-            name = "{!r}".format(name)[2:-1]
-            rawval = "{!r}".format(rawval)[2:-1]
+        if raw: # for __repr__
+            name = "{!r}".format(name)
+            if name[0] in 'bru':
+                name = name[2:-1]
+            else:
+                name = name[1:-1]
+            rawval = "{!r}".format(rawval)
+            if rawval[0] in 'bru':
+                rawval = rawval[2:-1]
+            else:
+                rawval = rawval[1:-1]
         return "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
             rawval, self.id, name)
 
