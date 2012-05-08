@@ -78,7 +78,7 @@ class ChoiceField(IntegerField):
             return None
         if isinstance(value, unicode):
             return int(value)
-        if isinstance(value, int):
+        if isinstance(value, (int, long)):
             return value
         return self.item_getter(value)[0]
 
