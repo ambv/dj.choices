@@ -123,6 +123,9 @@ class ChoiceField(IntegerField):
         value = self._get_val_from_obj(obj)
         return self.get_db_prep_value(value)
 
+    def south_field_triple(self):
+        return ('dj.choices.fields.ChoiceField', [], {'choices': 'dj.choices.Gender'})
+
 
 class _TypedChoiceField(forms.TypedChoiceField):
     def clean(self, value):
