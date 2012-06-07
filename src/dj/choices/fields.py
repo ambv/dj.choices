@@ -86,7 +86,12 @@ class ChoiceField(IntegerField):
         return self.item_getter(value)[0]
 
     def get_prep_lookup(self, lookup_type, value):
-        value = self.get_prep_value(value)
+        if lookup_type == 'exact':
+            value = self.get_prep_value(value)
+        elif lookup_type in ('in', 'range'):
+            value = [self.get_prep_value(v) for v in value]
+        elif lookup_type != 'isnull':
+            raise TypeError('Invalid lookup_type: %r' % lookup_type)
         return super(ChoiceField, self).get_prep_lookup(lookup_type, value)
 
     def validate(self, value, model_instance):
