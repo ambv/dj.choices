@@ -32,7 +32,7 @@ from django.db import models
 from django.db.models.fields import IntegerField
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
-from dj.choices import unset, Choices
+from dj.choices import unset, Choices, Gender
 
 
 class ChoiceField(IntegerField):
@@ -40,6 +40,9 @@ class ChoiceField(IntegerField):
     __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
+        if kwargs.get('_in_south'): # workaround for South removing `choices`
+            kwargs['choices'] = Gender
+            del kwargs['_in_south']
         if 'choices' not in kwargs:
             raise exceptions.ImproperlyConfigured("No choices class specified.")
         else:
@@ -124,7 +127,18 @@ class ChoiceField(IntegerField):
         return self.get_db_prep_value(value)
 
     def south_field_triple(self):
-        return ('dj.choices.fields.ChoiceField', [], {'choices': 'dj.choices.Gender'})
+        kwargs = dict(
+            null=repr(self.null),
+            blank=repr(self.blank),
+            db_column=repr(self.db_column),
+            db_index=repr(self.db_index),
+            primary_key=repr(self.primary_key),
+            unique=repr(self.unique),
+            _in_south=repr(True),
+        )
+        if self.default is not models.NOT_PROVIDED:
+            kwargs['default'] = self.default
+        return ('dj.choices.fields.ChoiceField', [], kwargs)
 
 
 class _TypedChoiceField(forms.TypedChoiceField):
