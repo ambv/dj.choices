@@ -323,6 +323,16 @@ The easiest way would be to run::
 Change Log
 ==========
 
+0.8.5
+-----
+
+* ``ChoiceField`` is now correctly South-migrable
+
+* Models with ``ChoiceFields`` can now use ``__in``, ``__range`` and
+  ``__isnull`` lookups on them; fixes `issue #1
+  <https://github.com/ambv/dj.choices/issues/1>`_
+
+
 0.8.4
 -----
 

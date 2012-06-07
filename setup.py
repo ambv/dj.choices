@@ -32,7 +32,7 @@ finally:
 
 setup (
     name = 'dj.choices',
-    version = '0.8.4',
+    version = '0.8.5',
     author = 'Łukasz Langa',
     author_email = 'lukasz@langa.pl',
     description = "An enum implementation for Django forms and models.",
