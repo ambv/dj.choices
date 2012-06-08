@@ -142,7 +142,7 @@ class ChoiceField(IntegerField):
             _in_south=repr(True),
         )
         if self.default is not models.NOT_PROVIDED:
-            kwargs['default'] = self.default
+            kwargs['default'] = repr(self.default)
         return ('dj.choices.fields.ChoiceField', [], kwargs)
 
 
