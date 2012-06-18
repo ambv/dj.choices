@@ -323,6 +323,18 @@ The easiest way would be to run::
 Change Log
 ==========
 
+0.8.6
+-----
+
+* Values outside of defined choices for a ``ChoiceField`` now correctly display
+  validation errors instead of throwing exceptions; fixes `issue #2
+  <https://github.com/ambv/dj.choices/issues/2>`_
+
+* Fixed regression from 0.8.5 where ``__gt(e)`` and ``__lt(e)`` couldn't be used
+  on ``ChoiceField`` lookups
+
+* Minor refinements
+
 0.8.5
 -----
 
