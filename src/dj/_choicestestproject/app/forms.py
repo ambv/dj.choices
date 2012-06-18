@@ -26,19 +26,24 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from dj._choicestestproject.app.models import Favourites
+from dj._choicestestproject.app.models import Favourites, RegularIntegers
 from django import forms
 from django.forms.forms import BoundField
 
 
-class FavouritesForm(forms.ModelForm):
+class HasBoundValue(object):
+    """Bound value helpers for unit tests."""
+    def _bound_value(self, field_name):
+        field = self.fields[field_name]
+        return BoundField(self, field, field_name).value()
+
+class FavouritesForm(forms.ModelForm, HasBoundValue):
     class Meta:
         model = Favourites
         widgets = {
             'sport': forms.HiddenInput(),
         }
 
-    def _bound_value(self, field_name):
-        # for unit tests only
-        field = self.fields[field_name]
-        return BoundField(self, field, field_name).value()
+class RegularIntegersForm(forms.ModelForm, HasBoundValue):
+    class Meta:
+        model = RegularIntegers

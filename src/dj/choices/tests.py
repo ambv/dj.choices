@@ -264,10 +264,45 @@ class SimpleTest(TestCase):
         self.assertEqual(judy_form._bound_value('sport'), Sports.poker.id)
         self.assertEqual(judy_form._bound_value('name'), 'Judy')
         data_for_form = dict(judy_form.initial)
-        data_for_form.update({'color': 3})
+        data_for_form.update({'color': ''})
         judy_form_data = FavouritesForm(instance=judy, data=data_for_form)
         self.assertTrue(judy_form_data.is_valid())
-        self.assertEqual(judy_form_data._bound_value('color'), Color.blue.id)
+        self.assertEqual(judy_form_data._bound_value('color'), None)
         self.assertEqual(judy_form_data._bound_value('music'), MusicGenre.banjo.id)
         self.assertEqual(judy_form_data._bound_value('sport'), Sports.poker.id)
         self.assertEqual(judy_form_data._bound_value('name'), 'Judy')
+        invalid_data_for_form = dict(judy_form.initial)
+        invalid_data_for_form.update({'color': -1, 'music': '', 'sport': None})
+        judy_form_invalid_data = FavouritesForm(instance=judy,
+                data=invalid_data_for_form)
+        self.assertFalse(judy_form_invalid_data.is_valid())
+        self.assertEqual(set(judy_form_invalid_data.errors.keys()), {'color',
+            'music', 'sport'})
+        self.assertTrue('not a valid choice' in
+                judy_form_invalid_data.errors['color'][0])
+        self.assertTrue('cannot be null' in
+                judy_form_invalid_data.errors['music'][0])
+        self.assertTrue('cannot be null' in
+                judy_form_invalid_data.errors['sport'][0])
+
+    def test_regularintegers(self):
+        from dj._choicestestproject.app.models import Color, RegularIntegers
+        from dj._choicestestproject.app.forms import RegularIntegersForm
+        rint = RegularIntegers.create()
+        self.assertEqual(rint.color, Color.green.id)
+        rint_invalid = RegularIntegers.create(color=-1)
+        self.assertEqual(rint_invalid.color, -1)
+        empty_form = RegularIntegersForm()
+        self.assertFalse(empty_form.is_valid()) # because it's not bound
+        valid_form = RegularIntegersForm(data={'color': 1})
+        self.assertTrue(valid_form.is_valid())
+        invalid_form = RegularIntegersForm(data={'color': -1})
+        self.assertFalse(invalid_form.is_valid())
+        self.assertTrue('color' in invalid_form.errors)
+        self.assertTrue('Select a valid choice' in
+                invalid_form.errors['color'][0])
+        invalid_type_form = RegularIntegersForm(data={'color': 'aaa'})
+        self.assertFalse(invalid_type_form.is_valid())
+        self.assertTrue('color' in invalid_type_form.errors)
+        self.assertTrue('Select a valid choice' in
+                invalid_type_form.errors['color'][0])

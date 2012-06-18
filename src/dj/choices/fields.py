@@ -26,8 +26,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import math
+
 from django import forms
-from django.core import exceptions
+from django.core import exceptions, validators
 from django.db import models
 from django.db.models.fields import IntegerField
 from django.utils.text import capfirst
@@ -74,10 +76,14 @@ class ChoiceField(IntegerField):
         try:
             return self.choice_class.from_id(value)
         except (TypeError, ValueError):
-            raise exceptions.ValidationError(self.error_messages['invalid'])
+            raise exceptions.ValidationError(
+                self.error_messages['invalid_choice'] % value)
+
+    def from_python(self, value):
+        return self.get_prep_value(self.to_python(value))
 
     def get_prep_value(self, value):
-        if value is None:
+        if value in validators.EMPTY_VALUES:
             return None
         if isinstance(value, unicode):
             return int(value)
@@ -87,7 +93,10 @@ class ChoiceField(IntegerField):
 
     def get_prep_lookup(self, lookup_type, value):
         if lookup_type in ('exact', 'lt', 'lte', 'gt', 'gte'):
-            value = self.get_prep_value(value)
+            if lookup_type in ('gte', 'lt') and isinstance(value, float):
+                value = math.ceil(value)
+            else:
+                value = self.get_prep_value(value)
         elif lookup_type in ('in', 'range'):
             value = [self.get_prep_value(v) for v in value]
         elif lookup_type != 'isnull':
@@ -112,7 +121,7 @@ class ChoiceField(IntegerField):
             # Fields with choices get special treatment.
             include_blank = self.blank or not (self.has_default() or 'initial' in kwargs)
             defaults['choices'] = self.get_choices(include_blank=include_blank)
-            defaults['coerce'] = self.get_prep_value # XXX: changed
+            defaults['coerce'] = self.from_python # XXX: changed
             if self.null:
                 defaults['empty_value'] = None
             form_class = _TypedChoiceField # XXX: changed
