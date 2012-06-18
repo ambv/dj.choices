@@ -86,7 +86,7 @@ class ChoiceField(IntegerField):
         return self.item_getter(value)[0]
 
     def get_prep_lookup(self, lookup_type, value):
-        if lookup_type == 'exact':
+        if lookup_type in ('exact', 'lt', 'lte', 'gt', 'gte'):
             value = self.get_prep_value(value)
         elif lookup_type in ('in', 'range'):
             value = [self.get_prep_value(v) for v in value]

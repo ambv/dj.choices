@@ -234,6 +234,9 @@ class SimpleTest(TestCase):
         tom.save()
         tom2 = Favourites.objects.get(name='Tom')
         self.assertEqual(tom2.color, Color.red)
+        tom_and_judy = Favourites.objects.filter(color__in=(Color.blue, Color.red))
+        self.assertEqual(tom_and_judy.count(), 2)
+        self.assertEqual({obj.name for obj in tom_and_judy}, {'Judy', 'Tom'})
 
     def test_form_with_choicefields(self):
         from dj._choicestestproject.app.models import Favourites, Color,\
