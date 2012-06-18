@@ -68,11 +68,11 @@ class Sports(Choices):
 
 class Favourites(models.Model):
     name = models.CharField(max_length=100)
-    color = ChoiceField(choices=Color, default=Color.green, null=True,
-        blank=True)
+    color = ChoiceField(choices=Color, default=Color.green)
     music = ChoiceField(choices=MusicGenre, filter=('rock', 'country',
         'banjo'))
     sport = ChoiceField(choices=Sports, grouped=True)
+    nullable = ChoiceField(choices=Color, default=None, null=True, blank=True)
 
     @classmethod
     def create(cls, **kwargs):
@@ -80,9 +80,11 @@ class Favourites(models.Model):
             'music': MusicGenre.banjo,
             'sport': Sports.poker,
             'color': Color.green,
+            'nullable': None,
         }
         defaults.update(kwargs)
         return cls.objects.create(**defaults)
+
 
 class RegularIntegers(models.Model):
     """A helper model to help test behaviour of the regular IntegerFields."""

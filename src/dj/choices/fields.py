@@ -59,7 +59,7 @@ class ChoiceField(IntegerField):
         kwargs['choices'] = self.choice_class(item=kwargs.get('item', unset),
             filter=kwargs.get('filter', (unset,)), grouped=kwargs.get('grouped',
                 False))
-        if 'default' in kwargs and not isinstance(kwargs['default'], int):
+        if isinstance(kwargs.get('default'), Choices.Choice):
             kwargs['default'] = self.item_getter(kwargs['default'])[0]
         for arg in 'filter', 'grouped', 'item':
             if arg in kwargs:

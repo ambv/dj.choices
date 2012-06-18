@@ -214,6 +214,7 @@ class SimpleTest(TestCase):
         self.assertEqual(judy.color, Color.green)
         self.assertEqual(judy.music, MusicGenre.banjo)
         self.assertEqual(judy.sport, Sports.poker)
+        self.assertEqual(judy.nullable, None)
         judy.color = Color.blue
         judy.music = MusicGenre.rock
         judy.sport = Sports.mountaineering
@@ -248,6 +249,7 @@ class SimpleTest(TestCase):
         self.assertEqual(empty_form._bound_value('music'), None)
         self.assertEqual(empty_form._bound_value('sport'), None)
         self.assertEqual(empty_form._bound_value('name'), None)
+        self.assertEqual(empty_form._bound_value('nullable'), None)
         empty_form_data = FavouritesForm(data={
                 'color': 1, 'music': 2, 'sport': 3, 'name': 'Richard'})
         self.assertTrue(empty_form_data.is_valid())
@@ -256,6 +258,7 @@ class SimpleTest(TestCase):
                 MusicGenre.country.id)
         self.assertEqual(empty_form_data._bound_value('sport'), Sports.baseball.id)
         self.assertEqual(empty_form_data._bound_value('name'), 'Richard')
+        self.assertEqual(empty_form_data._bound_value('nullable'), None)
         judy = Favourites.create(name='Judy')
         judy_form = FavouritesForm(instance=judy)
         self.assertFalse(judy_form.is_valid()) # because it's not bound
@@ -263,16 +266,19 @@ class SimpleTest(TestCase):
         self.assertEqual(judy_form._bound_value('music'), MusicGenre.banjo.id)
         self.assertEqual(judy_form._bound_value('sport'), Sports.poker.id)
         self.assertEqual(judy_form._bound_value('name'), 'Judy')
+        self.assertEqual(judy_form._bound_value('nullable'), None)
         data_for_form = dict(judy_form.initial)
-        data_for_form.update({'color': ''})
+        data_for_form.update({'nullable': Color.red})
         judy_form_data = FavouritesForm(instance=judy, data=data_for_form)
         self.assertTrue(judy_form_data.is_valid())
-        self.assertEqual(judy_form_data._bound_value('color'), None)
+        self.assertEqual(judy_form_data._bound_value('color'), Color.green.id)
         self.assertEqual(judy_form_data._bound_value('music'), MusicGenre.banjo.id)
         self.assertEqual(judy_form_data._bound_value('sport'), Sports.poker.id)
         self.assertEqual(judy_form_data._bound_value('name'), 'Judy')
+        self.assertEqual(judy_form_data._bound_value('nullable'), Color.red.id)
         invalid_data_for_form = dict(judy_form.initial)
-        invalid_data_for_form.update({'color': -1, 'music': '', 'sport': None})
+        invalid_data_for_form.update({'color': -1, 'music': '', 'sport': None,
+                'nullable': ''})
         judy_form_invalid_data = FavouritesForm(instance=judy,
                 data=invalid_data_for_form)
         self.assertFalse(judy_form_invalid_data.is_valid())
