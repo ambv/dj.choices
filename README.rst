@@ -45,10 +45,10 @@ A basic example::
     ValueError: Nothing found for 'perez'.
 
 You define a class of choices, specifying each choice as a class attribute.
-Those attributes automatically get indexes (starting with 1). The class provides
-several features which support the DRY principle:
+Those attributes are ``int`` subclasses, numbered automatically starting with
+1.  The class provides several features which support the DRY principle:
 
- * An object created from the choices class is basically a list of ``(id,
+ * An object instantiated from the choices class is basically a list of ``(id,
    localized_description)`` pairs straight for consumption by Django.
 
  * Each attribute defined can be retrieved directly from the class.
@@ -61,18 +61,18 @@ several features which support the DRY principle:
 
  * Lookup functions are available to help getting attributes or their metadata.
 
-.. note::   
+..  note::   
     The ``_ = Choices.Choice`` trick makes it possible for ``django-admin.py
     makemessages`` to find each choice description and include it in ``.po``
-    files for localization. It masks ugettext only in the scope of the class so
-    the rest of the module can safely use ugettext or ugettext_lazy. Having to
+    files for localization.  It masks ugettext only in the scope of the class so
+    the rest of the module can safely use ugettext or ugettext_lazy.  Having to
     specify ``_`` each time is not a particularly pretty solution but it's
-    explicit. Suggestions for a better approach are welcome.
+    explicit.  Suggestions for a better approach are welcome.
 
 Grouping choices
 ----------------
 
-One of the worst problems with choices is their weak extensibility. For
+One of the worst problems with choices is their weak extensibility.  For
 instance, an application defines a group of possible choices like this::
 
     >>> class License(Choices):
@@ -86,10 +86,10 @@ instance, an application defines a group of possible choices like this::
     [(1, u'GPL'), (2, u'BSD'), (3, u'Proprietary')]
    
 All is well until the application goes live and after a while the developer
-wants to include LGPL. The natural choice would be to add it after ``gpl`` but
-when we do that, the indexing would break. On the other hand, adding the new
+wants to include LGPL.  The natural choice would be to add it after ``gpl`` but
+when we do that, the indexing would break.  On the other hand, adding the new
 entry at the end of the definition looks ugly and makes the resulting combo
-boxes in the UI sorted in a counter-intuitive way. Grouping lets us solve this
+boxes in the UI sorted in a counter-intuitive way.  Grouping lets us solve this
 problem by explicitly defining the structure within a class of choices::
 
     >>> class License(Choices):
@@ -176,8 +176,8 @@ a Choice instance to do anything interesting with it::
     <Choice: Blue (id: 3, name: blue)> 
 
 To overcome those problems a ``ChoiceField`` is available in the
-``dj.choices.fields`` package. It is based on integers on the database level but
-the API exposes ``Choice`` instances. This helps both on the definition side::
+``dj.choices.fields`` package.  It is based on integers on the database level but
+the API exposes ``Choice`` instances.  This helps both on the definition side::
 
     color = ChoiceField(choices=Color, default=Color.green)
 
@@ -191,7 +191,7 @@ and on the access side::
     >>> Model.objects.get(pk=3).color
     <Choice: Green (id: 2, name: green)> 
 
-For rendering forms, the field coerces to integer values. That also means that
+For rendering forms, the field coerces to integer values.  That also means that
 wherever ``Choice`` instances are accepted, integers are also fine.
 
 Advanced functionality
@@ -222,7 +222,7 @@ Custom item format
 ~~~~~~~~~~~~~~~~~~
 
 One can also change how the pairs are constructed by providing a factory
-function. For instance, to use the class of choices defined above for the
+function.  For instance, to use the class of choices defined above for the
 ``LANGUAGES`` setting in ``settings.py``, one could specify::
 
     >>> Language(item=lambda choice: (choice.name, choice.raw))
@@ -262,16 +262,16 @@ In that case to get the implementation language back you'd do::
     'C'
 
 That frees your user code of any conditionals or dictionaries that depend on the
-state of the choices class. If you would add another choice to it, no user code
-needs to be changed to support it. This also supports the DRY principle because
+state of the choices class.  If you would add another choice to it, no user code
+needs to be changed to support it.  This also supports the DRY principle because
 the choices class becomes the single place where configuration of that kind is
 held.
 
 Extra attributes on choice groups
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Unsurprisingly, choice groups can have extra attributes as well. They are then
-inherited by choices in such a group and can be overriden if necessary. For
+Unsurprisingly, choice groups can have extra attributes as well.  They are then
+inherited by choices in such a group and can be overriden if necessary.  For
 instance::
 
   >>> class ProfileChange(Choices):
@@ -322,6 +322,16 @@ The easiest way would be to run::
 
 Change Log
 ==========
+
+0.9.0
+-----
+
+* Choices are now ``int`` subclasses so you can use a choice directly instead of
+  ``choice.id`` and ``int(choice)`` is always safe
+
+* ``unicode(choice)`` is now equivalent to ``choice.desc``
+
+* Fixed ``get_FIELD_display()`` on models with ``ChoiceFields``
 
 0.8.6
 -----

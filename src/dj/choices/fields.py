@@ -85,9 +85,9 @@ class ChoiceField(IntegerField):
     def get_prep_value(self, value):
         if value in validators.EMPTY_VALUES:
             return None
-        if isinstance(value, unicode):
+        if isinstance(value, (unicode, int)):
             return int(value)
-        if isinstance(value, (int, long)):
+        if isinstance(value, long):
             return value
         return self.item_getter(value)[0]
 

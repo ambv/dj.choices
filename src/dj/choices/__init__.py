@@ -34,13 +34,16 @@ from textwrap import dedent
 
 unset = object()
 ugettext = unset
+no_id_given = -255
 
 
-class ChoicesEntry(object):
+class ChoicesEntry(int):
     global_id = 0
 
+    def __new__(cls, *args, **kwargs):
+        return  super(ChoicesEntry, cls).__new__(cls, kwargs[b'id'])
+
     def __init__(self, description, id, name=None):
-        self.id = id
         self.raw = description
         self.global_id = Choice.global_id
         self.name = name
@@ -56,6 +59,19 @@ class ChoicesEntry(object):
         if ugettext is unset:
             from django.utils.translation import ugettext
         return ugettext(self.raw)
+
+    @property
+    def id(self):
+        return int(self)
+
+    @property
+    def name(self):
+        return self.__name
+
+    @name.setter
+    def name(self, value):
+        self.__name = value.strip('_') if value else value
+        self.__raw_name = value
 
     def __unicode__(self, raw=False):
         name = self.name
@@ -105,6 +121,10 @@ class ChoicesEntry(object):
 class ChoiceGroup(ChoicesEntry):
     """A group of choices."""
 
+    def __new__(cls, *args, **kwargs):
+        return  super(ChoiceGroup, cls).__new__(cls, id=kwargs.get(b'id',
+            args[0]))
+
     def __init__(self, id, description=''):
         super(ChoiceGroup, self).__init__(description, id=id)
         self.choices = []
@@ -113,24 +133,29 @@ class ChoiceGroup(ChoicesEntry):
 class Choice(ChoicesEntry):
     """A single choice."""
 
-    def __init__(self, description):
-        super(Choice, self).__init__(description, id=-255)
+    def __new__(cls, *args, **kwargs):
+        return  super(Choice, cls).__new__(cls, id=kwargs.get(b'id',
+            no_id_given))
+
+    def __init__(self, description, id=no_id_given, name=None):
+        super(Choice, self).__init__(description, id=id, name=name)
         self.group = None
 
-    def __unicode__(self, raw=False):
-        name = self.name
+    def __unicode__(self):
+        return self.desc
+
+    def __repr__(self):
         rawval = self.raw
-        if raw: # for __repr__
-            name = "{!r}".format(name)
-            if name[0] in 'bru':
-                name = name[2:-1]
-            else:
-                name = name[1:-1]
-            rawval = "{!r}".format(rawval)
-            if rawval[0] in 'bru':
-                rawval = rawval[2:-1]
-            else:
-                rawval = rawval[1:-1]
+        name = "{!r}".format(self.name)
+        if name[0] in 'bru':
+            name = name[2:-1]
+        else:
+            name = name[1:-1]
+        rawval = "{!r}".format(rawval)
+        if rawval[0] in 'bru':
+            rawval = rawval[2:-1]
+        else:
+            rawval = rawval[1:-1]
         return "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
             rawval, self.id, name)
 
@@ -159,29 +184,35 @@ class _ChoicesMeta(type):
     def __new__(meta, classname, bases, classDict):
         groups = []
         values = []
+        raw_values = []
         for k, v in classDict.items():
-            if isinstance(v, ChoicesEntry):
-                v.name = k.strip('_')
-                values.append(v)
-        values.sort(lambda x, y: x.global_id - y.global_id)
+            if not isinstance(v, ChoicesEntry):
+                continue
+            v.name = k
+            raw_values.append(v)
+        raw_values.sort(lambda x, y: x.global_id - y.global_id)
         last_choice_id = 0
         group = None
-        for choice in values:
+        for choice in raw_values:
             if isinstance(choice, ChoiceGroup):
                 last_choice_id = choice.id
                 group = choice
                 groups.append(group)
             else:
-                if group:
+                if choice.id == no_id_given:
+                    last_choice_id += 1
+                    c = Choice(choice.raw, id=last_choice_id,
+                        name=choice.name)
+                    choice = c.extra(**{k: getattr(choice, k) for k in
+                        choice.__extra__})
+                last_choice_id = choice.id
+                if group is not None:
                     group.choices.append(choice)
                     choice.group = group
-                    for extra in group.__extra__:
-                        if not hasattr(choice, extra):
-                            setattr(choice, extra, getattr(group, extra))
-                if choice.id == -255:
-                    last_choice_id += 1
-                    choice.id = last_choice_id
-                last_choice_id = choice.id
+                    choice.extra(**{k: getattr(group, k) for k in
+                        group.__extra__ if k not in choice.__extra__})
+                values.append(choice)
+                classDict[choice._ChoicesEntry__raw_name] = choice
         classDict['__groups__'] = groups
         classDict['__choices__'] = values
         return type.__new__(meta, classname, bases, classDict)
