@@ -203,14 +203,16 @@ class _ChoicesMeta(type):
                     last_choice_id += 1
                     c = Choice(choice.raw, id=last_choice_id,
                         name=choice.name)
-                    choice = c.extra(**{k: getattr(choice, k) for k in
-                        choice.__extra__})
+                    d = dict([[k, getattr(choice, k)] for k in
+                              choice.__extra__])
+                    choice = c.extra(**d)
                 last_choice_id = choice.id
                 if group is not None:
                     group.choices.append(choice)
                     choice.group = group
-                    choice.extra(**{k: getattr(group, k) for k in
-                        group.__extra__ if k not in choice.__extra__})
+                    d = dict([[k, getattr(group, k)] for k in
+                        group.__extra__ if k not in choice.__extra__])
+                    choice.extra(**d)
                 values.append(choice)
                 classDict[choice._ChoicesEntry__raw_name] = choice
         classDict['__groups__'] = groups
