@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2011 - 2012 by Łukasz Langa
+# Copyright (C) 2011-2013 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,21 +31,26 @@ from __future__ import unicode_literals
 from functools import partial
 from textwrap import dedent
 
+from django.utils.encoding import StrAndUnicode
+
+import six
 
 unset = object()
 ugettext = unset
 no_id_given = -255
 
 
-class ChoicesEntry(int):
+class ChoicesEntry(StrAndUnicode, int):
     global_id = 0
 
     def __new__(cls, *args, **kwargs):
-        return  super(ChoicesEntry, cls).__new__(cls, kwargs[b'id'])
+        return  super(ChoicesEntry, cls).__new__(
+            cls, kwargs[str('id')]
+        )
 
     def __init__(self, description, id, name=None):
         self.raw = description
-        self.global_id = Choice.global_id
+        self.global_id = ChoicesEntry.global_id
         self.name = name
         self.__extra__ = []
         ChoicesEntry.global_id += 1
@@ -85,7 +90,10 @@ class ChoicesEntry(int):
             name, self.id)
 
     def __repr__(self):
-        return self.__unicode__(raw=True)
+        result = self.__unicode__(raw=True)
+        if not six.PY3:
+            result = result.encode('utf8')
+        return result
 
     def extra(self, **other):
         """Enables adding custom attributes to choices at declaration time.
@@ -108,7 +116,7 @@ class ChoicesEntry(int):
             >>> Color.from_name(request.POST['color']).html
             '#00ff00'
         """
-        for key, value in other.iteritems():
+        for key, value in six.iteritems(other):
             self.__extra__.append(key)
             setattr(self, key, value)
         return self
@@ -122,7 +130,7 @@ class ChoiceGroup(ChoicesEntry):
     """A group of choices."""
 
     def __new__(cls, *args, **kwargs):
-        return  super(ChoiceGroup, cls).__new__(cls, id=kwargs.get(b'id',
+        return  super(ChoiceGroup, cls).__new__(cls, id=kwargs.get(str('id'),
             args[0]))
 
     def __init__(self, id, description=''):
@@ -134,7 +142,7 @@ class Choice(ChoicesEntry):
     """A single choice."""
 
     def __new__(cls, *args, **kwargs):
-        return  super(Choice, cls).__new__(cls, id=kwargs.get(b'id',
+        return  super(Choice, cls).__new__(cls, id=kwargs.get(str('id'),
             no_id_given))
 
     def __init__(self, description, id=no_id_given, name=None):
@@ -156,8 +164,11 @@ class Choice(ChoicesEntry):
             rawval = rawval[2:-1]
         else:
             rawval = rawval[1:-1]
-        return "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
+        result = "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
             rawval, self.id, name)
+        if not six.PY3:
+            result = result.encode('utf8')
+        return result
 
 
 def _getter(name, given, returns, found, getter):
@@ -190,7 +201,7 @@ class _ChoicesMeta(type):
                 continue
             v.name = k
             raw_values.append(v)
-        raw_values.sort(lambda x, y: x.global_id - y.global_id)
+        raw_values.sort(key=lambda elem: elem.global_id)
         last_choice_id = 0
         group = None
         for choice in raw_values:
@@ -218,7 +229,7 @@ class _ChoicesMeta(type):
         return type.__new__(meta, classname, bases, classDict)
 
 
-class Choices(list):
+class Choices(six.with_metaclass(_ChoicesMeta, list)):
     __metaclass__ = _ChoicesMeta
 
     def __init__(self, filter=(unset,), item=unset, grouped=False):

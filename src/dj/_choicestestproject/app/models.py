@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 by Łukasz Langa
+# Copyright (C) 2012-2013 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ class Color(Choices):
     green = _("Green")
     blue = _("Blue")
 
+
 class MusicGenre(Choices):
     _ = Choices.Choice
 
@@ -46,6 +47,7 @@ class MusicGenre(Choices):
     pop = _("Pop")
     rap = _("Rap")
     rock = _("Rock")
+
 
 class Sports(Choices):
     _ = Choices.Choice

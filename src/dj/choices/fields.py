@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 by Łukasz Langa
+# Copyright (C) 2012-2013 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -35,6 +35,8 @@ from django.db.models.fields import IntegerField
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 from dj.choices import unset, Choices, Gender
+
+import six
 
 
 class ChoiceField(IntegerField):
@@ -85,7 +87,7 @@ class ChoiceField(IntegerField):
     def get_prep_value(self, value):
         if value in validators.EMPTY_VALUES:
             return None
-        if isinstance(value, (unicode, int)):
+        if isinstance(value, (six.text_type, int)):
             return int(value)
         if isinstance(value, long):
             return value

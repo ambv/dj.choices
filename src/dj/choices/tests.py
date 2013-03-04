@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 by Łukasz Langa
+# Copyright (C) 2012-2013 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -31,6 +31,8 @@ from __future__ import unicode_literals
 
 from django.test import TestCase
 
+import six
+
 
 class SimpleTest(TestCase):
     def test_dummy(self):
@@ -56,7 +58,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.white, 1)
         self.assertEqual(Colors.white.id, 1)
         self.assertEqual(Colors.white.desc, "White")
-        self.assertEqual(unicode(Colors.white), "White")
+        self.assertEqual(six.text_type(Colors.white), "White")
         self.assertEqual(Colors.white.name, "white")
         self.assertEqual(Colors.from_id(1), Colors.white)
         self.assertEqual(Colors.name_from_id(1), Colors.white.name)
@@ -71,7 +73,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.yellow, 2)
         self.assertEqual(Colors.yellow.id, 2)
         self.assertEqual(Colors.yellow.desc, "Yellow")
-        self.assertEqual(unicode(Colors.yellow), "Yellow")
+        self.assertEqual(six.text_type(Colors.yellow), "Yellow")
         self.assertEqual(Colors.yellow.name, "yellow")
         self.assertEqual(Colors.from_id(2), Colors.yellow)
         self.assertEqual(Colors.name_from_id(2), Colors.yellow.name)
@@ -86,7 +88,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.red, 3)
         self.assertEqual(Colors.red.id, 3)
         self.assertEqual(Colors.red.desc, "Red")
-        self.assertEqual(unicode(Colors.red), "Red")
+        self.assertEqual(six.text_type(Colors.red), "Red")
         self.assertEqual(Colors.red.name, "red")
         self.assertEqual(Colors.from_id(3), Colors.red)
         self.assertEqual(Colors.name_from_id(3), Colors.red.name)
@@ -101,7 +103,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.green, 4)
         self.assertEqual(Colors.green.id, 4)
         self.assertEqual(Colors.green.desc, "Green")
-        self.assertEqual(unicode(Colors.green), "Green")
+        self.assertEqual(six.text_type(Colors.green), "Green")
         self.assertEqual(Colors.green.name, "green")
         self.assertEqual(Colors.from_id(4), Colors.green)
         self.assertEqual(Colors.name_from_id(4), Colors.green.name)
@@ -116,7 +118,7 @@ class SimpleTest(TestCase):
         self.assertEqual(Colors.black, 5)
         self.assertEqual(Colors.black.id, 5)
         self.assertEqual(Colors.black.desc, "Black")
-        self.assertEqual(unicode(Colors.black), "Black")
+        self.assertEqual(six.text_type(Colors.black), "Black")
         self.assertEqual(Colors.black.name, "black")
         self.assertEqual(Colors.from_id(5), Colors.black)
         self.assertEqual(Colors.name_from_id(5), Colors.black.name)
@@ -177,7 +179,7 @@ class SimpleTest(TestCase):
         try:
             NoChoice()
             self.fail("ValueError not raised.")
-        except ValueError, e:
+        except ValueError as e:
             self.assertEqual(str(e), "Choices class declared with no actual "
                     "choice fields.")
 

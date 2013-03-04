@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 by Łukasz Langa
+# Copyright (C) 2012-2013 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -37,12 +37,14 @@ class HasBoundValue(object):
         field = self.fields[field_name]
         return BoundField(self, field, field_name).value()
 
+
 class FavouritesForm(forms.ModelForm, HasBoundValue):
     class Meta:
         model = Favourites
         widgets = {
             'sport': forms.HiddenInput(),
         }
+
 
 class RegularIntegersForm(forms.ModelForm, HasBoundValue):
     class Meta:

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (C) 2012 by Łukasz Langa
+# Copyright (C) 2012-2013 by Łukasz Langa
 # 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -26,11 +26,16 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import six
+
 from django.conf import settings
 from django.test import TestCase
 from django.test.simple import DjangoTestSuiteRunner, reorder_suite
 from django.utils.importlib import import_module
-from django.utils.unittest.loader import defaultTestLoader
+if six.PY3:
+    from unittest.loader import defaultTestLoader
+else:
+    from django.utils.unittest.loader import defaultTestLoader
 
 
 class DiscoveryDjangoTestSuiteRunner(DjangoTestSuiteRunner):
