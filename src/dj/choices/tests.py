@@ -150,10 +150,10 @@ class SimpleTest(TestCase):
             entry8 = _("entry8")
             entry9 = _("entry9")
 
-        self.assertEqual(Groupies(), [(1, u'entry1'), (2, u'entry2'),
-                (3, u'entry3'), (11, u'entry4'), (12, u'entry5'),
-                (13, u'entry6'), (21, u'entry7'), (22, u'entry8'),
-                (23, u'entry9')])
+        self.assertEqual(Groupies(), [(1, six.text_type('entry1')), (2, six.text_type('entry2')),
+                (3, six.text_type('entry3')), (11, six.text_type('entry4')), (12, six.text_type('entry5')),
+                (13, six.text_type('entry6')), (21, six.text_type('entry7')), (22, six.text_type('entry8')),
+                (23, six.text_type('entry9'))])
         self.assertEqual(Groupies.entry1.group, Groupies.GROUP1)
         self.assertEqual(Groupies.entry2.group, Groupies.GROUP1)
         self.assertEqual(Groupies.entry3.group, Groupies.GROUP1)
@@ -187,8 +187,8 @@ class SimpleTest(TestCase):
         from dj.choices import Country
 
         self.assertEqual(len(Country()), 235)
-        self.assertEqual(Country(filter=("pl", "gb", "de")), [(73, u'Germany'),
-            (153, u'Poland'), (202, u'United Kingdom')])
+        self.assertEqual(Country(filter=("pl", "gb", "de")), [(73, six.text_type('Germany')),
+            (153, six.text_type('Poland')), (202, six.text_type('United Kingdom'))])
 
     def test_shifted_basic(self):
         from dj.choices import Choices

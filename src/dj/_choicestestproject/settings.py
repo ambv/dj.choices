@@ -35,7 +35,7 @@ SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
-USE_I18N = True
+USE_I18N = False
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale
@@ -146,3 +146,8 @@ import dj.choices
 BASE_PATH = os.path.dirname(os.path.realpath(os.path.join(__file__, '..')))
 TEST_DISCOVERY_ROOT = os.path.dirname(dj.choices.__file__)
 TEST_RUNNER = "dj._choicestestproject.DiscoveryDjangoTestSuiteRunner"
+
+import django
+if django.VERSION[:2] < (1, 4):
+    del LOGGING['filters']['require_debug_false']
+    del LOGGING['handlers']['mail_admins']['filters']
