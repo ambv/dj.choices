@@ -144,7 +144,7 @@ import os
 import dj.choices
 
 BASE_PATH = os.path.realpath(os.path.join(os.path.dirname(__file__), '..'))
-TEST_DISCOVERY_ROOT = os.path.realpath(os.path.dirname(dj.chain.__file__))
+TEST_DISCOVERY_ROOT = os.path.realpath(os.path.dirname(dj.choices.__file__))
 TEST_RUNNER = "dj._choicestestproject.DiscoveryDjangoTestSuiteRunner"
 
 import django
