@@ -1,3 +1,4 @@
+==========
 dj.choices
 ==========
 
@@ -324,15 +325,15 @@ The easiest way would be to run::
   $ DJANGO_SETTINGS_MODULE="dj._choicestestproject.settings" django-admin.py test
 
 Change Log
-==========
+----------
 
 0.9.1
------
+~~~~~
 
 * Long overdue Python 3 support (considered experimental)
 
 0.9.0
------
+~~~~~
 
 * Choices are now ``int`` subclasses so you can use a choice directly instead of
   ``choice.id`` and ``int(choice)`` is always safe
@@ -342,7 +343,7 @@ Change Log
 * Fixed ``get_FIELD_display()`` on models with ``ChoiceFields``
 
 0.8.6
------
+~~~~~
 
 * Values outside of defined choices for a ``ChoiceField`` now correctly display
   validation errors instead of throwing exceptions; fixes `issue #2
@@ -356,7 +357,7 @@ Change Log
 * Minor refinements
 
 0.8.5
------
+~~~~~
 
 * ``ChoiceField`` is now correctly South-migrable
 
@@ -366,7 +367,7 @@ Change Log
 
 
 0.8.4
------
+~~~~~
 
 * proper ChoiceField support if the underlying ``IntegerField`` returns
   a ``long`` instead of an ``int``
@@ -374,20 +375,20 @@ Change Log
 * minor ``__unicode__`` corrections for byte strings
 
 0.8.3
------
+~~~~~
 
 * ``MANIFEST.in`` was previously missing which made the source distribution hard
   to install
 
 0.8.2
------
+~~~~~
 
 * ``ChoiceField`` introduced
 
 * extra attribute injection API is now public and documented
 
 0.8.1
------
+~~~~~
 
 * old accessors temporarily restored for backward compatibility (undocumented
   and to be removed in 1.0)
@@ -395,13 +396,13 @@ Change Log
 * minor documentation fixes
 
 0.8.0
------
+~~~~~
 
 * code separated from ``lck.django``
 
 * PEP8-fied the accessor APIs
 
 Authors
-=======
+-------
 
 Glued together by `Łukasz Langa <mailto:lukasz@langa.pl>`_.
