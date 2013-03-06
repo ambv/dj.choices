@@ -2,8 +2,8 @@
 dj.choices
 ==========
 
-.. image:: https://secure.travis-ci.org/ambv/dj.choices.png
-  :target: https://secure.travis-ci.org/ambv/dj.choices
+.. image:: https://travis-ci.org/ambv/dj.choices.png
+  :target: https://travis-ci.org/ambv/dj.choices
 
 This is a much clearer way to specify choices for fields in models and forms.
 A basic example::
