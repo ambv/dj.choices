@@ -327,6 +327,11 @@ The easiest way would be to run::
 Change Log
 ----------
 
+0.9.2
+~~~~~
+
+* Python 2.6 is now supported as well thanks to Carl van Tonder
+
 0.9.1
 ~~~~~
 
@@ -405,4 +410,5 @@ Change Log
 Authors
 -------
 
-Glued together by `Łukasz Langa <mailto:lukasz@langa.pl>`_.
+Glued together by `Łukasz Langa <mailto:lukasz@langa.pl>`_. Python 2.6 support
+by `Carl van Tonder <carl@supervacuo.com>`_.

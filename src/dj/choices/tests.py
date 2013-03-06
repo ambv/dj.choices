@@ -259,7 +259,7 @@ class SimpleTest(TestCase):
         self.assertEqual(tom2.color, Color.red)
         tom_and_judy = Favourites.objects.filter(color__in=(Color.blue, Color.red))
         self.assertEqual(tom_and_judy.count(), 2)
-        self.assertEqual({obj.name for obj in tom_and_judy}, {'Judy', 'Tom'})
+        self.assertEqual(set(obj.name for obj in tom_and_judy), set(['Judy', 'Tom']))
         self.assertEqual(tom2.get_sport_display(), 'Mountaineering')
 
     def test_form_with_choicefields(self):
@@ -305,8 +305,8 @@ class SimpleTest(TestCase):
         judy_form_invalid_data = FavouritesForm(instance=judy,
                 data=invalid_data_for_form)
         self.assertFalse(judy_form_invalid_data.is_valid())
-        self.assertEqual(set(judy_form_invalid_data.errors.keys()), {'color',
-            'music', 'sport'})
+        self.assertEqual(set(judy_form_invalid_data.errors.keys()),
+                set(['color', 'music', 'sport']))
         self.assertTrue('not a valid choice' in
                 judy_form_invalid_data.errors['color'][0])
         self.assertTrue('cannot be null' in
