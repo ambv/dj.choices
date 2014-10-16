@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2010-2013 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -22,27 +22,18 @@
 # THE SOFTWARE.
 
 import os
-import sys
-import codecs
 from setuptools import setup, find_packages
 
-PY3 = sys.version_info[0] == 3
+with open(os.path.join(os.path.dirname(__file__), 'README.rst'), 'rb') as ldf:
+    long_description = ldf.read().decode('utf8')
 
-if not PY3:
-    reload(sys)
-    sys.setdefaultencoding('utf8')
-
-with codecs.open(
-    os.path.join(os.path.dirname(__file__), 'README.rst'), 'r', 'utf8',
-) as ld_file:
-    long_description = ld_file.read()
 # We let it die a horrible tracebacking death if reading the file fails.
 # We couldn't sensibly recover anyway: we need the long description.
 
 setup (
     name = 'dj.choices',
-    version = '0.9.2',
-    author = 'Łukasz Langa',
+    version = '0.10.0',
+    author = '\xc5\x81ukasz Langa',
     author_email = 'lukasz@langa.pl',
     description = "An enum implementation for Django forms and models.",
     long_description = long_description,
@@ -71,6 +62,7 @@ setup (
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules',

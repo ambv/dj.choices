@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2012-2013 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -47,7 +47,7 @@ class ChoiceField(IntegerField):
         if kwargs.get('_in_south'): # workaround for South removing `choices`
             kwargs['choices'] = Gender
             del kwargs['_in_south']
-        if 'choices' not in kwargs:
+        if 'choices' not in kwargs or not isinstance(kwargs['choices'], type):
             raise exceptions.ImproperlyConfigured("No choices class specified.")
         else:
             try:
@@ -79,7 +79,8 @@ class ChoiceField(IntegerField):
             return self.choice_class.from_id(value)
         except (TypeError, ValueError):
             raise exceptions.ValidationError(
-                self.error_messages['invalid_choice'] % value)
+                self.error_messages['invalid_choice'] % {'value': value}
+            )
 
     def from_python(self, value):
         return self.get_prep_value(self.to_python(value))
@@ -155,6 +156,12 @@ class ChoiceField(IntegerField):
         if self.default is not models.NOT_PROVIDED:
             kwargs['default'] = repr(self.default)
         return ('dj.choices.fields.ChoiceField', [], kwargs)
+
+    def deconstruct(self):
+        # Django 1.7 migrations
+        name, path, args, kwargs = super(ChoiceField, self).deconstruct()
+        kwargs['choices'] = self.choice_class
+        return name, path, args, kwargs
 
 
 class _TypedChoiceField(forms.TypedChoiceField):

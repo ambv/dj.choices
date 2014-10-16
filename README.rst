@@ -11,10 +11,10 @@ A basic example::
     >>> from dj.choices import Choices
     >>> class Gender(Choices):
     ...   _ = Choices.Choice
-    ...   
+    ...
     ...   male = _("Male")
     ...   female = _("Female")
-    ... 
+    ...
     >>> Gender()
     [(1, u'Male'), (2, u'Female')]
     >>> Gender.male
@@ -56,7 +56,7 @@ Those attributes are ``int`` subclasses, numbered automatically starting with
    localized_description)`` pairs straight for consumption by Django.
 
  * Each attribute defined can be retrieved directly from the class.
-   
+
  * Metadata (e.g. attribute name, raw and localized description, numeric ID) of
    each attribute is accessible.
 
@@ -65,7 +65,7 @@ Those attributes are ``int`` subclasses, numbered automatically starting with
 
  * Lookup functions are available to help getting attributes or their metadata.
 
-..  note::   
+..  note::
     The ``_ = Choices.Choice`` trick makes it possible for ``django-admin.py
     makemessages`` to find each choice description and include it in ``.po``
     files for localization.  It masks ugettext only in the scope of the class so
@@ -81,14 +81,14 @@ instance, an application defines a group of possible choices like this::
 
     >>> class License(Choices):
     ...   _ = Choices.Choice
-    ...   
+    ...
     ...   gpl = _("GPL")
     ...   bsd = _("BSD")
     ...   proprietary = _("Proprietary")
-    ... 
+    ...
     >>> License()
     [(1, u'GPL'), (2, u'BSD'), (3, u'Proprietary')]
-   
+
 All is well until the application goes live and after a while the developer
 wants to include LGPL.  The natural choice would be to add it after ``gpl`` but
 when we do that, the indexing would break.  On the other hand, adding the new
@@ -98,19 +98,19 @@ problem by explicitly defining the structure within a class of choices::
 
     >>> class License(Choices):
     ...   _ = Choices.Choice
-    ...   
+    ...
     ...   COPYLEFT = Choices.Group(0)
     ...   gpl = _("GPL")
-    ...   
+    ...
     ...   PUBLIC_DOMAIN = Choices.Group(100)
     ...   bsd = _("BSD")
-    ...   
+    ...
     ...   OSS = Choices.Group(200)
     ...   apache2 = _("Apache 2")
-    ...   
+    ...
     ...   COMMERCIAL = Choices.Group(300)
     ...   proprietary = _("Proprietary")
-    ... 
+    ...
     >>> License()
     [(1, u'GPL'), (101, u'BSD'), (201, u'Apache 2'), (301, u'Proprietary')]
 
@@ -118,25 +118,25 @@ This enables the developer to include more licenses of each group later on::
 
     >>> class License(Choices):
     ...   _ = Choices.Choice
-    ...   
+    ...
     ...   COPYLEFT = Choices.Group(0)
     ...   gpl_any = _("GPL, any")
     ...   gpl2 = _("GPL 2")
     ...   gpl3 = _("GPL 3")
     ...   lgpl = _("LGPL")
     ...   agpl = _("Affero GPL")
-    ...   
+    ...
     ...   PUBLIC_DOMAIN = Choices.Group(100)
     ...   bsd = _("BSD")
     ...   public_domain = _("Public domain")
-    ...   
+    ...
     ...   OSS = Choices.Group(200)
     ...   apache2 = _("Apache 2")
     ...   mozilla = _("MPL")
-    ...   
+    ...
     ...   COMMERCIAL = Choices.Group(300)
     ...   proprietary = _("Proprietary")
-    ... 
+    ...
     >>> License()
     [(1, u'GPL, any'), (2, u'GPL 2'), (3, u'GPL 3'), (4, u'LGPL'),
      (5, u'Affero GPL'), (101, u'BSD'), (102, u'Public domain'),
@@ -177,7 +177,7 @@ a Choice instance to do anything interesting with it::
     >>> obj.color
     3
     >>> Color.from_id(obj.color)
-    <Choice: Blue (id: 3, name: blue)> 
+    <Choice: Blue (id: 3, name: blue)>
 
 To overcome those problems a ``ChoiceField`` is available in the
 ``dj.choices.fields`` package.  It is based on integers on the database level but
@@ -193,7 +193,7 @@ and on the access side::
     >>> obj.color = Color.green
     >>> obj.save()
     >>> Model.objects.get(pk=3).color
-    <Choice: Green (id: 2, name: green)> 
+    <Choice: Green (id: 2, name: green)>
 
 For rendering forms, the field coerces to integer values.  That also means that
 wherever ``Choice`` instances are accepted, integers are also fine.
@@ -209,17 +209,17 @@ out only the currently applicable values on choices creation::
 
     >>> class Language(Choices):
     ...   _ = Choices.Choice
-    ...   
+    ...
     ...   de = _("German")
     ...   en = _("English")
     ...   fr = _("French")
     ...   pl = _("Polish")
-    ... 
+    ...
     >>> Language()
     [(1, u'German'), (2, u'English'), (3, u'French'), (4, u'Polish')]
     >>> Language(filter=("en", "pl"))
     [(2, u'English'), (4, u'Polish')]
-    
+
 This has the great advantage of keeping the IDs and sorting intact.
 
 Custom item format
@@ -280,18 +280,18 @@ instance::
 
   >>> class ProfileChange(Choices):
   ...   _ = Choices.Choice
-  ... 
+  ...
   ...   USER = Choices.Group(0).extra(icon='bookkeeping.png', is_public=True)
   ...   email = _("e-mail").extra(is_public=False)
   ...   first_name = _("first name")
   ...   last_name = _("last name")
-  ... 
+  ...
   ...   BASIC_INFO = Choices.Group(10).extra(icon='bookkeeping.png', is_public=True)
   ...   birth_date = _("birth date").extra(icon='calendar.png')
   ...   gender = _("gender").extra(icon='male_female.png')
   ...   country = _("country")
   ...   city = _("city")
-  ... 
+  ...
   ...   CONTACT_INFO = Choices.Group(20).extra(icon='contactbook.png', is_public=False)
   ...   skype = _("Skype ID")
   ...   icq = _("ICQ number")
@@ -326,6 +326,12 @@ The easiest way would be to run::
 
 Change Log
 ----------
+
+0.10.0
+~~~~~~
+
+* Works and tests run on Django 1.6 and Django 1.7; now tested with
+  Python 3.4 as well
 
 0.9.2
 ~~~~~

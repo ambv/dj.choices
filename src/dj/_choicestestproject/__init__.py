@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2012-2013 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -26,19 +26,18 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import six
-
 from django.conf import settings
 from django.test import TestCase
-from django.test.simple import DjangoTestSuiteRunner, reorder_suite
+from django.test.simple import DjangoTestSuiteRunner
 from django.utils.importlib import import_module
-if six.PY3:
+try:
     from unittest.loader import defaultTestLoader
-else:
-    from django.utils.unittest.loader import defaultTestLoader
+except ImportError:
+    # Python 2.6
+    from unittest2.loader import defaultTestLoader
 
 
-class DiscoveryDjangoTestSuiteRunner(DjangoTestSuiteRunner):
+class OldStyleDiscoveryDjangoTestSuiteRunner(DjangoTestSuiteRunner):
     """A test suite runner that uses unittest2 test discovery.
     Courtesy of @carljm."""
 
@@ -63,4 +62,31 @@ class DiscoveryDjangoTestSuiteRunner(DjangoTestSuiteRunner):
             for test in extra_tests:
                 suite.addTest(test)
 
+        from django.test.simple import reorder_suite   # Django 1.5 and lower
         return reorder_suite(suite, (TestCase,))
+
+try:
+    from django.test.runner import DiscoverRunner
+    class DiscoveryDjangoTestSuiteRunner(DiscoverRunner):
+        """Unfortunately the new DiscoverRunner doesn't handle custom top level
+        correctly."""
+        def __init__(self, pattern=None, top_level=None,
+                    verbosity=1, interactive=True, failfast=False,
+                    **kwargs):
+            self.test_label_default = settings.TEST_DISCOVERY_ROOT
+            if not top_level:
+                top_level = self.test_label_default
+            super(DiscoveryDjangoTestSuiteRunner, self).__init__(
+                pattern=pattern, top_level=top_level, verbosity=verbosity,
+                interactive=interactive, failfast=failfast, **kwargs
+            )
+
+        def build_suite(self, test_labels=None, extra_tests=None, **kwargs):
+            if not test_labels:
+                test_labels = [self.test_label_default]
+            return super(DiscoveryDjangoTestSuiteRunner, self).build_suite(
+                test_labels=test_labels, extra_tests=extra_tests, **kwargs
+            )
+
+except ImportError:
+    DiscoveryDjangoTestSuiteRunner = OldStyleDiscoveryDjangoTestSuiteRunner

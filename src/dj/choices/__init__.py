@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # Copyright (C) 2011-2013 by Łukasz Langa
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -31,8 +31,6 @@ from __future__ import unicode_literals
 from functools import partial
 from textwrap import dedent
 
-from django.utils.encoding import StrAndUnicode
-
 import six
 
 unset = object()
@@ -40,7 +38,7 @@ ugettext = unset
 no_id_given = -255
 
 
-class ChoicesEntry(StrAndUnicode, int):
+class ChoicesEntry(int):
     global_id = 0
 
     def __new__(cls, *args, **kwargs):
@@ -79,6 +77,7 @@ class ChoicesEntry(StrAndUnicode, int):
         self.__raw_name = value
 
     def __unicode__(self, raw=False):
+        """Always returns Unicode."""
         name = self.name
         if raw:
             name = "{!r}".format(name)
@@ -89,11 +88,16 @@ class ChoicesEntry(StrAndUnicode, int):
         return "<{}: {} (id: {})>".format(self.__class__.__name__,
             name, self.id)
 
-    def __repr__(self):
-        result = self.__unicode__(raw=True)
-        if not six.PY3:
+    def __str__(self, raw=False):
+        """Returns Unicode on Py3, bytes on Py2."""
+        result = self.__unicode__(raw=raw)
+        if six.PY2:
             result = result.encode('utf8')
         return result
+
+    def __repr__(self):
+        """Returns escaped Unicode on Py3, escaped bytes on Py2."""
+        return self.__str__(raw=True)
 
     def extra(self, **other):
         """Enables adding custom attributes to choices at declaration time.
@@ -110,7 +114,7 @@ class ChoicesEntry(StrAndUnicode, int):
 
             >>> Color.red.html
             '#ff0000'
-    
+
         or with choices received using the getters::
 
             >>> Color.from_name(request.POST['color']).html
@@ -152,6 +156,12 @@ class Choice(ChoicesEntry):
     def __unicode__(self):
         return self.desc
 
+    def __str__(self):
+        result = self.__unicode__()
+        if six.PY2:
+            result = result.encode('utf8')
+        return result
+
     def __repr__(self):
         rawval = self.raw
         name = "{!r}".format(self.name)
@@ -166,7 +176,7 @@ class Choice(ChoicesEntry):
             rawval = rawval[1:-1]
         result = "<{}: {} (id: {}, name: {})>".format(self.__class__.__name__,
             rawval, self.id, name)
-        if not six.PY3:
+        if six.PY2:
             result = result.encode('utf8')
         return result
 
