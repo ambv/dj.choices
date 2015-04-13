@@ -242,6 +242,8 @@ class SimpleTest(TestCase):
         judy.sport = Sports.mountaineering
         judy.save()
         judy2 = Favourites.objects.get(name='Judy')
+        # Check the type to make sure field's to_python is getting called
+        self.assertEqual(type(judy2.color), type(Color.blue))
         self.assertEqual(judy2.color, Color.blue)
         self.assertEqual(judy2.music, MusicGenre.rock)
         self.assertEqual(judy2.sport, Sports.mountaineering)
