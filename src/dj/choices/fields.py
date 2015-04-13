@@ -39,9 +39,8 @@ from dj.choices import unset, Choices, Gender
 import six
 
 
-class ChoiceField(IntegerField):
+class ChoiceField(six.with_metaclass(models.SubfieldBase, IntegerField)):
     description = _("Integer")
-    __metaclass__ = models.SubfieldBase
 
     def __init__(self, *args, **kwargs):
         if kwargs.get('_in_south'): # workaround for South removing `choices`
