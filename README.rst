@@ -327,6 +327,15 @@ The easiest way would be to run::
 Change Log
 ----------
 
+0.11.0
+~~~~~~
+
+* Drop compatibility for Django < 1.4 and Python 2.6
+
+* Add support for Django 1.9 and 1.10 (use ``from_db_value`` instead of ``SubfieldBase``)
+
+* Add support for Python 3.5
+
 0.10.0
 ~~~~~~
 

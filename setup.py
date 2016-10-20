@@ -32,7 +32,7 @@ with open(os.path.join(os.path.dirname(__file__), 'README.rst'), 'rb') as ldf:
 
 setup (
     name = 'dj.choices',
-    version = '0.10.0',
+    version = '0.11.0',
     author = '\xc5\x81ukasz Langa',
     author_email = 'lukasz@langa.pl',
     description = "An enum implementation for Django forms and models.",
@@ -57,12 +57,11 @@ setup (
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Software Development :: Libraries :: Python Modules',
