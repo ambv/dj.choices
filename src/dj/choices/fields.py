@@ -38,8 +38,15 @@ from dj.choices import unset, Choices, Gender
 
 import six
 
+try:
+    # Removed in Django 1.10 (replaced by `from_db_value` method)
+    from django.db.models import SubfieldBase
+except ImportError:
+    class SubfieldBase(type):
+        pass
 
-class ChoiceField(six.with_metaclass(models.SubfieldBase, IntegerField)):
+
+class ChoiceField(six.with_metaclass(SubfieldBase, IntegerField)):
     description = _("Integer")
 
     def __init__(self, *args, **kwargs):
@@ -67,9 +74,6 @@ class ChoiceField(six.with_metaclass(models.SubfieldBase, IntegerField)):
                 del kwargs[arg]
         super(ChoiceField, self).__init__(*args, **kwargs)
 
-    def get_internal_type(self):
-        return "IntegerField"
-
     def to_python(self, value):
         value = super(ChoiceField, self).to_python(self.get_prep_value(value))
         if value is None:
@@ -80,6 +84,12 @@ class ChoiceField(six.with_metaclass(models.SubfieldBase, IntegerField)):
             raise exceptions.ValidationError(
                 self.error_messages['invalid_choice'] % {'value': value}
             )
+
+    def from_db_value(self, value, expression, connection, context):
+        # Added in Django 1.8. Replaced SubfieldBase
+        if value is None:
+            return value
+        return self.choice_class.from_id(value)
 
     def from_python(self, value):
         return self.get_prep_value(self.to_python(value))
