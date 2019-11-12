@@ -242,8 +242,6 @@ class _ChoicesMeta(type):
 
 
 class Choices(six.with_metaclass(_ChoicesMeta, list)):
-    __metaclass__ = _ChoicesMeta
-
     def __init__(self, filter=(unset,), item=unset, grouped=False):
         """Creates a list of pairs from the specified Choices class.
         By default, each pair consists of a numeric ID and the translated
